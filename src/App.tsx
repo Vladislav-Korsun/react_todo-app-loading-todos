@@ -15,6 +15,7 @@ export const App: React.FC = () => {
 
   const hasTodos = todos.length > 0;
   const allCompleted = todos.length > 0 && todos.every(todo => todo.completed);
+  const notCompletedCount = todos.filter(todo => !todo.completed).length;
 
   useEffect(() => {
     if (!USER_ID) {
@@ -86,54 +87,53 @@ export const App: React.FC = () => {
         </header>
 
         <section className="todoapp__main" data-cy="TodoList">
-          {isLoading && (
-            <div data-cy="TodoLoader" className="todo">
-              <label className="todo__status-label">
-                <input type="checkbox" className="todo__status" disabled />
-              </label>
-
-              <span className="todo__title">Loading...</span>
-            </div>
-          )}
-
-          {!isLoading &&
-            visibleTodos.map(todo => (
+          {visibleTodos.map(todo => (
+            <div
+              key={todo.id}
+              data-cy="Todo"
+              className={classNames('todo', {
+                completed: todo.completed,
+              })}
+            >
               <div
-                key={todo.id}
-                data-cy="Todo"
-                className={classNames('todo', {
-                  completed: todo.completed,
+                data-cy="TodoLoader"
+                className={classNames('modal overlay', {
+                  'is-active': isLoading,
                 })}
               >
-                <label className="todo__status-label">
-                  <input
-                    data-cy="TodoStatus"
-                    type="checkbox"
-                    className="todo__status"
-                    checked={todo.completed}
-                    readOnly
-                  />
-                </label>
-
-                <span data-cy="TodoTitle" className="todo__title">
-                  {todo.title}
-                </span>
-
-                <button
-                  type="button"
-                  className="todo__remove"
-                  data-cy="TodoDelete"
-                >
-                  ×
-                </button>
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
               </div>
-            ))}
+
+              <label className="todo__status-label">
+                <input
+                  data-cy="TodoStatus"
+                  type="checkbox"
+                  className="todo__status"
+                  checked={todo.completed}
+                  readOnly
+                />
+              </label>
+
+              <span data-cy="TodoTitle" className="todo__title">
+                {todo.title}
+              </span>
+
+              <button
+                type="button"
+                className="todo__remove"
+                data-cy="TodoDelete"
+              >
+                ×
+              </button>
+            </div>
+          ))}
         </section>
         {/* Hide the footer if there are no todos */}
         {hasTodos && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              3 items left
+              {notCompletedCount} items left
             </span>
 
             {/* Active link should have the 'selected' class */}
